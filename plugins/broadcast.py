@@ -29,7 +29,7 @@ from database.database import *
 
 #=====================================================================================##
 
-REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
+REPLY_ERROR = "<code>Utilisez cette commande en réponse à n'importe quel message Telegram sans espaces.</code>"
 
 #=====================================================================================##
 
@@ -45,10 +45,10 @@ async def send_pin_text(client: Bot, message: Message):
         deleted = 0
         unsuccessful = 0
 
-        pls_wait = await message.reply("<i>ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ....</i>")
+        pls_wait = await message.reply("<i>Diffusion en cours...</i>")
         for chat_id in query:
             try:
-                # Send and pin the message
+                # Envoyer et épingler le message
                 sent_msg = await broadcast_msg.copy(chat_id)
                 await client.pin_chat_message(chat_id=chat_id, message_id=sent_msg.id, both_sides=True)
                 successful += 1
@@ -64,22 +64,22 @@ async def send_pin_text(client: Bot, message: Message):
                 await db.del_user(chat_id)
                 deleted += 1
             except Exception as e:
-                print(f"Failed to send or pin message to {chat_id}: {e}")
+                print(f"Échec de l'envoi ou de l'épinglage du message à {chat_id}: {e}")
                 unsuccessful += 1
             total += 1
 
-        status = f"""<b><u>ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴄᴏᴍᴘʟᴇᴛᴇᴅ</u></b>
+        status = f"""<b><u>Diffusion terminée</u></b>
 
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code>"""
+Utilisateurs totaux : <code>{total}</code>
+Réussis : <code>{successful}</code>
+Utilisateurs bloqués : <code>{blocked}</code>
+Comptes supprimés : <code>{deleted}</code>
+Échecs : <code>{unsuccessful}</code>"""
 
         return await pls_wait.edit(status)
 
     else:
-        msg = await message.reply("Reply to a message to broadcast and pin it.")
+        msg = await message.reply("Répondez à un message pour le diffuser et l'épingler.")
         await asyncio.sleep(8)
         await msg.delete()
 
@@ -97,7 +97,7 @@ async def send_text(client: Bot, message: Message):
         deleted = 0
         unsuccessful = 0
 
-        pls_wait = await message.reply("<i>ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ....</i>")
+        pls_wait = await message.reply("<i>Diffusion en cours...</i>")
         for chat_id in query:
             try:
                 await broadcast_msg.copy(chat_id)
@@ -117,13 +117,13 @@ async def send_text(client: Bot, message: Message):
                 pass
             total += 1
 
-        status = f"""<b><u>ʙʀᴏᴀᴅᴄᴀꜱᴛ...</u>
+        status = f"""<b><u>Diffusion...</u>
 
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
+Utilisateurs totaux : <code>{total}</code>
+Réussis : <code>{successful}</code>
+Utilisateurs bloqués : <code>{blocked}</code>
+Comptes supprimés : <code>{deleted}</code>
+Échecs : <code>{unsuccessful}</code></b>"""
 
         return await pls_wait.edit(status)
 
@@ -145,15 +145,15 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
 # All rights reserved.
 #
 
-# broadcast with auto-del
+# diffusion avec suppression automatique
 
 @Bot.on_message(filters.private & filters.command('dbroadcast') & admin)
 async def delete_broadcast(client: Bot, message: Message):
     if message.reply_to_message:
         try:
-            duration = int(message.command[1])  # Get the duration in seconds
+            duration = int(message.command[1])  # Obtenir la durée en secondes
         except (IndexError, ValueError):
-            await message.reply("<b>Pʟᴇᴀsᴇ ᴜsᴇ ᴀ ᴠᴀʟɪᴅ ᴅᴜʀᴀᴛɪᴏɴ ɪɴ sᴇᴄᴏɴᴅs.</b> Usᴀɢᴇ: /dbroadcast {duration}")
+            await message.reply("<b>Veuillez utiliser une durée valide en secondes.</b> Utilisation : /dbroadcast {duration}")
             return
 
         query = await db.full_userbase()
@@ -164,12 +164,12 @@ async def delete_broadcast(client: Bot, message: Message):
         deleted = 0
         unsuccessful = 0
 
-        pls_wait = await message.reply("<i>Broadcast with auto-delete processing....</i>")
+        pls_wait = await message.reply("<i>Diffusion avec suppression automatique en cours...</i>")
         for chat_id in query:
             try:
                 sent_msg = await broadcast_msg.copy(chat_id)
-                await asyncio.sleep(duration)  # Wait for the specified duration
-                await sent_msg.delete()  # Delete the message after the duration
+                await asyncio.sleep(duration)  # Attendre la durée spécifiée
+                await sent_msg.delete()  # Supprimer le message après la durée
                 successful += 1
             except FloodWait as e:
                 await asyncio.sleep(e.x)
@@ -188,18 +188,18 @@ async def delete_broadcast(client: Bot, message: Message):
                 pass
             total += 1
 
-        status = f"""<b><u>Bʀᴏᴀᴅᴄᴀsᴛɪɴɢ ᴡɪᴛʜ Aᴜᴛᴏ-Dᴇʟᴇᴛᴇ...</u>
+        status = f"""<b><u>Diffusion avec suppression automatique...</u>
 
-Total Users: <code>{total}</code>
-Successful: <code>{successful}</code>
-Blocked Users: <code>{blocked}</code>
-Deleted Accounts: <code>{deleted}</code>
-Unsuccessful: <code>{unsuccessful}</code></b>"""
+Utilisateurs totaux : <code>{total}</code>
+Réussis : <code>{successful}</code>
+Utilisateurs bloqués : <code>{blocked}</code>
+Comptes supprimés : <code>{deleted}</code>
+Échecs : <code>{unsuccessful}</code></b>"""
 
         return await pls_wait.edit(status)
 
     else:
-        msg = await message.reply("Pʟᴇᴀsᴇ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ʙʀᴏᴀᴅᴄᴀsᴛ ɪᴛ ᴡɪᴛʜ Aᴜᴛᴏ-Dᴇʟᴇᴛᴇ.")
+        msg = await message.reply("Veuillez répondre à un message pour le diffuser avec suppression automatique.")
         await asyncio.sleep(8)
         await msg.delete()
 
@@ -214,4 +214,3 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
 # Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
 #
 # All rights reserved.
-#

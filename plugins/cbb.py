@@ -59,18 +59,18 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         try:
             chat = await client.get_chat(cid)
             mode = await db.get_channel_mode(cid)
-            status = "🟢 On" if mode == "on" else "🔴 Off"
-            new_mode = "ᴏғғ" if mode == "on" else "on"
+            status = "🟢 Activé" if mode == "on" else "🔴 Désactivé"
+            new_mode = "off" if mode == "on" else "on"
             buttons = [
-                [InlineKeyboardButton(f"ʀᴇǫ ᴍᴏᴅᴇ {'OFF' if mode == 'on' else 'ON'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
-                [InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="fsub_back")]
+                [InlineKeyboardButton(f"Mode Req {'DÉSACTIVER' if mode == 'on' else 'ACTIVER'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
+                [InlineKeyboardButton("‹ Retour", callback_data="fsub_back")]
             ]
             await query.message.edit_text(
-                f"Channel: {chat.title}\nCurrent Force-Sub Mode: {status}",
+                f"Chaîne : {chat.title}\nMode Abonnement Obligatoire : {status}",
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
         except Exception:
-            await query.answer("Failed to fetch channel info", show_alert=True)
+            await query.answer("Échec de la récupération des infos de la chaîne", show_alert=True)
 
     elif data.startswith("rfs_toggle_"):
         cid, action = data.split("_")[2:]
@@ -78,18 +78,18 @@ async def cb_handler(client: Bot, query: CallbackQuery):
         mode = "on" if action == "on" else "off"
 
         await db.set_channel_mode(cid, mode)
-        await query.answer(f"Force-Sub set to {'ON' if mode == 'on' else 'OFF'}")
+        await query.answer(f"Abonnement obligatoire {'ACTIVÉ' if mode == 'on' else 'DÉSACTIVÉ'}")
 
-        # Refresh the same channel's mode view
+        # Rafraîchir la vue du mode de la même chaîne
         chat = await client.get_chat(cid)
-        status = "🟢 ON" if mode == "on" else "🔴 OFF"
+        status = "🟢 ACTIVÉ" if mode == "on" else "🔴 DÉSACTIVÉ"
         new_mode = "off" if mode == "on" else "on"
         buttons = [
-            [InlineKeyboardButton(f"ʀᴇǫ ᴍᴏᴅᴇ {'OFF' if mode == 'on' else 'ON'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
-            [InlineKeyboardButton("‹ ʙᴀᴄᴋ", callback_data="fsub_back")]
+            [InlineKeyboardButton(f"Mode Req {'DÉSACTIVER' if mode == 'on' else 'ACTIVER'}", callback_data=f"rfs_toggle_{cid}_{new_mode}")],
+            [InlineKeyboardButton("‹ Retour", callback_data="fsub_back")]
         ]
         await query.message.edit_text(
-            f"Channel: {chat.title}\nCurrent Force-Sub Mode: {status}",
+            f"Chaîne : {chat.title}\nMode Abonnement Obligatoire : {status}",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
 
@@ -106,6 +106,6 @@ async def cb_handler(client: Bot, query: CallbackQuery):
                 continue
 
         await query.message.edit_text(
-            "sᴇʟᴇᴄᴛ ᴀ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴛᴏɢɢʟᴇ ɪᴛs ғᴏʀᴄᴇ-sᴜʙ ᴍᴏᴅᴇ:",
+            "Sélectionnez une chaîne pour modifier son mode d'abonnement obligatoire :",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
