@@ -18,35 +18,35 @@ from logging.handlers import RotatingFileHandler
 #rohit_1888 on Tg
 #--------------------------------------------
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8269134466:AAFv2KK3a0MFkzFyotbaLMOdDNNKlvnydUE")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8205916004:AAEwYA2hW9PsmzFJasZXmoBMD08q3kdm9Hg")
 APP_ID = int(os.environ.get("APP_ID", "25926022")) #Your API ID from my.telegram.org
 API_HASH = os.environ.get("API_HASH", "30db27d9e56d854fb5e943723268db32") #Your API Hash from my.telegram.org
 #--------------------------------------------
 
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1003161888858")) #Your db channel Id
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1003173430503")) #Your db channel Id
 OWNER = os.environ.get("OWNER", "ZeeXDevBot") # Owner username without @
 OWNER_ID = int(os.environ.get("OWNER_ID", "8140299716")) # Owner id
 #--------------------------------------------
 PORT = os.environ.get("PORT", "8001")
 #--------------------------------------------
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://tgbot:4KzEdxEl4YldwwFR@tg.vr8ef.mongodb.net/?retryWrites=true&w=majority&appName=Tg")
+DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://Ethan:Ethan123@telegrambots.lva9j.mongodb.net/?retryWrites=true&w=majority&appName=TELEGRAMBOTS")
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluster0")
 #--------------------------------------------
 FSUB_LINK_EXPIRY = int(os.getenv("FSUB_LINK_EXPIRY", "840"))  # 0 means no expiry
 BAN_SUPPORT = os.environ.get("BAN_SUPPORT", "https://t.me/BTZF_CHAT")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "200"))
 #--------------------------------------------
-START_PIC = os.environ.get("START_PIC", "https://ibb.co/qLMmwR0y")
-FORCE_PIC = os.environ.get("FORCE_PIC", "https://ibb.co/qLMmwR0y")
+START_PIC = os.environ.get("START_PIC", "https://ibb.co/nNSsK23f")
+FORCE_PIC = os.environ.get("FORCE_PIC", "https://ibb.co/nNSsK23f")
 #--------------------------------------------
 
 #--------------------------------------------
 HELP_TXT = "<b><blockquote>Besoin d'aide ?</blockquote></b>"
-ABOUT_TXT = "<b><blockquote>◈ Ceci est un bot OpenSource qui vous offre des fichiers de Films/Series inédite</blockquote></b>"
+ABOUT_TXT = "<b><blockquote>◈ Ceci est un bot OpenSource qui vous offre des fichiers d'Animes/Manga Propulsé par @AnimeCey & @MangaCey</blockquote></b>"
 #--------------------------------------------
 #--------------------------------------------
-START_MSG = os.environ.get("START_MESSAGE", "<b>Salut {first}\n\n<blockquote>Bienvenue sur l'un des meilleures plateformes de diffusion sur Télégram.\n\nTout les films et Séries  disponibles💥\n\n<a href='https://t.me/posterserie'>𝙿𝙾𝚂𝚃𝙴𝚁𝚂 𝚂𝙴𝚁𝙸𝙴𝚂</a>\n<a href='https://t.me/motiveflix'>𝐏𝐎𝐒𝐓𝐄𝐑𝐒 𝐅𝐈𝐋𝐌𝐒</a>\n\n😍 Abonnez-vous ici ! et partager pour pouvoir Télécharger 👌.</blockquote></b>")
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "Salut {first}\n\n<b>Ɑνᥲᥒt Ꮷᥱ ρoυνoιɾ tᥱ́ᥣᥱ́ᥴhᥲɾɡᥱɾ νotɾᥱ 𝖿ιᥴhιᥱɾ, Vᥱυιᥣᥣᥱᴢ Ꮷ'ᥲᑲoɾᏧ ɾᥱȷoιᥒᏧɾᥱ ɱᥱs ᥴᥲᥒᥲυx.\n\nSᥱυᥣᥱs ᥣᥱs ρᥱɾsoᥒᥒᥱs ᥲᑲoᥒᥒᥱ́ᥱs ᥲ̀ ɱᥱs ᥴᥲᥒᥲυx o𝖿𝖿ιᥴιᥱᥣs ᥴι-Ꮷᥱssoυs ρᥱυνᥱᥒt ᥱ𝖿𝖿ᥱᥴtυᥱɾ Ꮷᥱs tᥱ́ᥣᥱ́ᥴhᥲɾɡᥱɱᥱᥒts..</b>")
+START_MSG = os.environ.get("START_MESSAGE", "<b>Salut {first}\n\n<blockquote>Ceci est un bot OpenSource . ce bot ne dispose pas en lui dans sa base de donné les fichiers d'animes. si ceci viole vos conditions de droits d'auteurs. contactez nous à @ZeeXDevBot</blockquote></b>")
+FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "Salut {first}\n\n<b>Impossible de récupérer ce(s) fichier(s) : vous n’êtes pas membre de ce(s) canal(aux). Pour y accéder, rejoignez d’abord le(s) canal(aux), puis réessayez de récupérer les fichiers...</b>")
 
 CMD_TXT = """<blockquote><b>» Commandes administrateur :</b></blockquote>
 
@@ -73,7 +73,7 @@ CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None) #Définissez votre lége
 PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False #Mettez True si vous voulez empêcher le transfert de fichiers depuis le bot
 #--------------------------------------------
 #Mettez True si vous voulez désactiver le bouton de partage des posts du canal
-DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'False'
+DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 #--------------------------------------------
 BOT_STATS_TEXT = "<b>TEMPS DE FONCTIONNEMENT DU BOT</b>\n{uptime}"
 USER_REPLY_TEXT = "Impossible d'utilisé ! Vous n'êtes pas un administrateur !!"
