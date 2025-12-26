@@ -15,7 +15,7 @@ import os
 logger = logging.getLogger(__name__)
 
 # URL de la WebApp AdsGram (obtenue depuis leur dashboard)
-ADSGRAM_WEBAPP_URL = os.environ.get("ADSGRAM_WEBAPP_URL", "")
+ADSGRAM_WEBAPP_URL = os.environ.get("ADSGRAM_WEBAPP_URL", "https://api.adsgram.ai/show/bot-20001")
 
 
 def create_adsgram_button():
