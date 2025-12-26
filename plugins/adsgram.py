@@ -14,19 +14,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def create_adsgram_button(user_id: int):
-    """Crée le bouton pour ouvrir la WebApp AdsGram avec user_id"""
+def create_adsgram_button():
+    """Crée le bouton pour ouvrir la WebApp AdsGram"""
     if not ADSGRAM_BLOCK_ID:
         logger.error("ADSGRAM_BLOCK_ID n'est pas configuré!")
         return None
     
-    # On ajoute le user_id dans l'URL pour le passer à AdsGram
-    webapp_url = f"https://api.adsgram.ai/adv?blockId={ADSGRAM_BLOCK_ID}&tg_id={user_id}"
+    webapp_url = f"https://api.adsgram.ai/adv?blockId={ADSGRAM_BLOCK_ID}"
     return InlineKeyboardMarkup([
         [InlineKeyboardButton(
             "📺 Regarder une pub (20h gratuit)", 
             web_app=WebAppInfo(url=webapp_url)
         )],
+        [InlineKeyboardButton("✅ J'ai vu la pub", callback_data="adsgram_confirm")],
         [InlineKeyboardButton("❌ Annuler", callback_data="cancel_ad")]
     ])
 
@@ -73,13 +73,16 @@ async def check_session_and_prompt(client: Client, user_id: int, message: Messag
             return False, None
     
     # Demander à l'utilisateur de regarder une pub
-    keyboard = create_adsgram_button(user_id)
+    keyboard = create_adsgram_button()
     if keyboard:
         await message.reply_text(
             "🔒 <b>Accès limité</b>\n\n"
             "Pour accéder à ce fichier, tu dois regarder une courte publicité.\n"
             f"Tu recevras <b>{FREE_SESSION_DURATION} heures</b> d'accès gratuit après avoir regardé la pub ! 🎉\n\n"
-            "👇 Clique sur le bouton ci-dessous :",
+            "👇 Clique sur le bouton ci-dessous :\n"
+            "1️⃣ Clique sur \"📺 Regarder une pub\"\n"
+            "2️⃣ Regarde la pub jusqu'au bout\n"
+            "3️⃣ Clique sur \"✅ J'ai vu la pub\"",
             reply_markup=keyboard,
             quote=True
         )
@@ -98,6 +101,42 @@ async def cancel_ad_callback(client: Client, callback: CallbackQuery):
     """Gère l'annulation de la visualisation de pub"""
     await callback.message.delete()
     await callback.answer("❌ Annulé", show_alert=False)
+
+
+@Client.on_callback_query(filters.regex("^adsgram_confirm$"))
+async def adsgram_confirm_callback(client: Client, callback: CallbackQuery):
+    """Callback quand l'utilisateur confirme avoir vu la pub"""
+    user_id = callback.from_user.id
+    
+    # Vérifier si peut regarder une pub
+    can_watch = await db.can_watch_ad(user_id)
+    if not can_watch:
+        session = await db.get_user_session(user_id)
+        if session and session.get('last_ad_watch'):
+            last_watch = datetime.fromisoformat(session['last_ad_watch'])
+            next_watch = last_watch + timedelta(hours=FREE_SESSION_DURATION)
+            time_until = next_watch - datetime.now()
+            hours = int(time_until.total_seconds() / 3600)
+            minutes = int((time_until.total_seconds() % 3600) / 60)
+            
+            await callback.answer(
+                f"⏳ Tu as déjà une session ! Prochaine pub dans {hours}h {minutes}min",
+                show_alert=True
+            )
+            return
+    
+    # Activer la session gratuite
+    await db.set_free_session(user_id, FREE_SESSION_DURATION)
+    
+    await callback.message.edit_text(
+        "✅ <b>Merci d'avoir regardé la pub !</b>\n\n"
+        f"🎉 Tu as maintenant <b>{FREE_SESSION_DURATION} heures</b> d'accès gratuit !\n"
+        "Tu peux maintenant accéder à tous les fichiers.\n\n"
+        "💡 Renvoie le lien du fichier pour y accéder."
+    )
+    
+    await callback.answer("✅ Session activée !", show_alert=False)
+    logger.info(f"Session activée pour l'utilisateur {user_id}")
 
 
 @Client.on_callback_query(filters.regex("^check_session$"))
@@ -139,37 +178,6 @@ async def check_session_callback(client: Client, callback: CallbackQuery):
                 )
 
 
-# Handler pour les données de la WebApp (après visualisation de la pub)
-@Client.on_message(filters.web_app_data)
-async def handle_webapp_data(client: Client, message: Message):
-    """Traite les données reçues de la WebApp AdsGram"""
-    try:
-        user_id = message.from_user.id
-        
-        logger.info(f"WebApp data reçue de l'utilisateur {user_id}: {message.web_app_data.data}")
-        
-        # AdsGram envoie les données après la visualisation réussie
-        # On active la session gratuite
-        await db.set_free_session(user_id, FREE_SESSION_DURATION)
-        
-        await message.reply_text(
-            "✅ <b>Merci d'avoir regardé la pub !</b>\n\n"
-            f"🎉 Tu as maintenant <b>{FREE_SESSION_DURATION} heures</b> d'accès gratuit !\n"
-            "Tu peux maintenant accéder à tous les fichiers.\n\n"
-            "💡 Renvoie le lien du fichier pour y accéder.",
-            quote=True
-        )
-        
-        logger.info(f"Session activée pour l'utilisateur {user_id}")
-        
-    except Exception as e:
-        logger.error(f"Erreur lors du traitement WebApp data: {e}")
-        await message.reply_text(
-            "❌ Une erreur s'est produite. Réessaie plus tard.",
-            quote=True
-        )
-
-
 # Commande pour vérifier le statut de la session
 @Client.on_message(filters.command("session") & filters.private)
 async def session_status(client: Client, message: Message):
@@ -199,7 +207,7 @@ async def session_status(client: Client, message: Message):
         can_watch = await db.can_watch_ad(user_id)
         
         if can_watch:
-            keyboard = create_adsgram_button(user_id)
+            keyboard = create_adsgram_button()
             await message.reply_text(
                 "❌ <b>Pas de session active</b>\n\n"
                 f"Regarde une pub pour obtenir <b>{FREE_SESSION_DURATION}h</b> d'accès gratuit !",
