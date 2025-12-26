@@ -7,24 +7,27 @@ from pyrogram.types import (
     Message
 )
 from database.database import db
-from config import ADSGRAM_BLOCK_ID, FREE_SESSION_DURATION, OWNER_ID
+from config import FREE_SESSION_DURATION, OWNER_ID
 from datetime import datetime, timedelta
 import logging
+import os
 
 logger = logging.getLogger(__name__)
+
+# URL de la WebApp AdsGram (obtenue depuis leur dashboard)
+ADSGRAM_WEBAPP_URL = os.environ.get("ADSGRAM_WEBAPP_URL", "")
 
 
 def create_adsgram_button():
     """Crée le bouton pour ouvrir la WebApp AdsGram"""
-    if not ADSGRAM_BLOCK_ID:
-        logger.error("ADSGRAM_BLOCK_ID n'est pas configuré!")
+    if not ADSGRAM_WEBAPP_URL:
+        logger.error("ADSGRAM_WEBAPP_URL n'est pas configuré!")
         return None
     
-    webapp_url = f"https://api.adsgram.ai/adv?blockId={ADSGRAM_BLOCK_ID}"
     return InlineKeyboardMarkup([
         [InlineKeyboardButton(
             "📺 Regarder une pub (20h gratuit)", 
-            web_app=WebAppInfo(url=webapp_url)
+            web_app=WebAppInfo(url=ADSGRAM_WEBAPP_URL)
         )],
         [InlineKeyboardButton("❌ Annuler", callback_data="cancel_ad")]
     ])
