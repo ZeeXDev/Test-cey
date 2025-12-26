@@ -26,7 +26,6 @@ def create_adsgram_button():
             "📺 Regarder une pub (20h gratuit)", 
             web_app=WebAppInfo(url=webapp_url)
         )],
-        [InlineKeyboardButton("✅ J'ai vu la pub", callback_data="adsgram_confirm")],
         [InlineKeyboardButton("❌ Annuler", callback_data="cancel_ad")]
     ])
 
@@ -79,10 +78,8 @@ async def check_session_and_prompt(client: Client, user_id: int, message: Messag
             "🔒 <b>Accès limité</b>\n\n"
             "Pour accéder à ce fichier, tu dois regarder une courte publicité.\n"
             f"Tu recevras <b>{FREE_SESSION_DURATION} heures</b> d'accès gratuit après avoir regardé la pub ! 🎉\n\n"
-            "👇 Clique sur le bouton ci-dessous :\n"
-            "1️⃣ Clique sur \"📺 Regarder une pub\"\n"
-            "2️⃣ Regarde la pub jusqu'au bout\n"
-            "3️⃣ Clique sur \"✅ J'ai vu la pub\"",
+            "👇 Clique sur le bouton ci-dessous et regarde la pub jusqu'au bout.\n"
+            "Ta session sera activée automatiquement ! ✨",
             reply_markup=keyboard,
             quote=True
         )
@@ -101,42 +98,6 @@ async def cancel_ad_callback(client: Client, callback: CallbackQuery):
     """Gère l'annulation de la visualisation de pub"""
     await callback.message.delete()
     await callback.answer("❌ Annulé", show_alert=False)
-
-
-@Client.on_callback_query(filters.regex("^adsgram_confirm$"))
-async def adsgram_confirm_callback(client: Client, callback: CallbackQuery):
-    """Callback quand l'utilisateur confirme avoir vu la pub"""
-    user_id = callback.from_user.id
-    
-    # Vérifier si peut regarder une pub
-    can_watch = await db.can_watch_ad(user_id)
-    if not can_watch:
-        session = await db.get_user_session(user_id)
-        if session and session.get('last_ad_watch'):
-            last_watch = datetime.fromisoformat(session['last_ad_watch'])
-            next_watch = last_watch + timedelta(hours=FREE_SESSION_DURATION)
-            time_until = next_watch - datetime.now()
-            hours = int(time_until.total_seconds() / 3600)
-            minutes = int((time_until.total_seconds() % 3600) / 60)
-            
-            await callback.answer(
-                f"⏳ Tu as déjà une session ! Prochaine pub dans {hours}h {minutes}min",
-                show_alert=True
-            )
-            return
-    
-    # Activer la session gratuite
-    await db.set_free_session(user_id, FREE_SESSION_DURATION)
-    
-    await callback.message.edit_text(
-        "✅ <b>Merci d'avoir regardé la pub !</b>\n\n"
-        f"🎉 Tu as maintenant <b>{FREE_SESSION_DURATION} heures</b> d'accès gratuit !\n"
-        "Tu peux maintenant accéder à tous les fichiers.\n\n"
-        "💡 Renvoie le lien du fichier pour y accéder."
-    )
-    
-    await callback.answer("✅ Session activée !", show_alert=False)
-    logger.info(f"Session activée pour l'utilisateur {user_id}")
 
 
 @Client.on_callback_query(filters.regex("^check_session$"))
