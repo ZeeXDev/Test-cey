@@ -1,7 +1,7 @@
 import asyncio
 from aiohttp import web
 from bot import Bot
-from web_server import web_server
+from plugins.web_server import web_server
 import pyrogram.utils
 import os
 
